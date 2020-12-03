@@ -1,4 +1,4 @@
-import ExpressApp from "./index";
+import ExpressApp from "./services/express";
 import PostsController from "./modules/posts/controllers/posts";
 
 const app = new ExpressApp([new PostsController()], 5000);
