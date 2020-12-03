@@ -7,7 +7,7 @@ const config = {
   },
   MONGO: {
     base: env.MONGO_BASE || 'tutorial',
-    host: env.MONGO_HOST || 'mongo',
+    host: env.MONGO_HOST || 'localhost',
     user: env.MONGO_USER || undefined,
     password: env.MONGO_PASSWORD || undefined,
     port: env.MONGO_PORT || 27017,

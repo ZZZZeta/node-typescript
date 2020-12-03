@@ -15,7 +15,10 @@ export default class Mongo {
 
   public initMongo() {
     mongoose
-      .connect(this.mongoUrl, { useNewUrlParser: true })
+      .connect(this.mongoUrl, {
+        useNewUrlParser: true,
+        useUnifiedTopology: true,
+      })
       .then(() => {
         console.log(`[mongo]: successfully connected to ${this.mongoUrl}`);
       })
