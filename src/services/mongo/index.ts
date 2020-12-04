@@ -7,13 +7,13 @@ export const mongoURI =
     : `mongodb://${config.MONGO.host}:${config.MONGO.port}/${config.MONGO.base}`;
 
 export default class Mongo {
-  public mongoUrl: string;
+  mongoUrl: string;
 
   constructor(mongoUrl: string) {
     this.mongoUrl = mongoUrl;
   }
 
-  public initMongo() {
+  initMongo() {
     mongoose
       .connect(this.mongoUrl, {
         useNewUrlParser: true,
