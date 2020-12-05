@@ -50,15 +50,13 @@ export default class PostsController implements Controller {
   };
 
   private createPost = (request: Request, response: Response) => {
-    const postData: Post = request.body;
-
     const result = validate<Post>(validationSchema.post, { ...request.body });
 
     if (result.error) {
       response.status(httpCode.UNPROCESSABLE_ENTITY).json(result);
     }
 
-    const createdPost = new this.post(postData);
+    const createdPost = new this.post(result.value);
     createdPost.save().then((savedPost) => {
       response.send(savedPost);
     });
