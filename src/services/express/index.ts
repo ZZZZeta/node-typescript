@@ -3,12 +3,13 @@ import bodyParser from "body-parser";
 import morgan from "morgan";
 import { isDevelop } from "../../config";
 import Mongo, { mongoURI } from "../mongo";
+import { Controller } from "../../interfaces/controller";
 
 export default class ExpressApp {
   app: Express;
   port: number;
 
-  constructor(controllers: any[], port: number) {
+  constructor(controllers: Controller[], port: number) {
     this.app = express();
     this.port = port;
 
