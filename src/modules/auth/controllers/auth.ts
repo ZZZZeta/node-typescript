@@ -1,28 +1,31 @@
 import { Router, Response, Request } from "express";
-import { User, userModel } from "../models/user";
+import { User, userModel } from "../../users/models/user";
 import bcrypt from "bcrypt";
 import httpCode from "http-status";
 import { Controller } from "../../../interfaces/controller";
 import { validate, validationSchema } from "../../../utils/validate";
+import Token from "../logic/token";
 
 export default class AuthController implements Controller {
   public path = "/auth";
   public router = Router();
   private user = userModel;
+  private token = new Token();
 
   constructor() {
     this.initializeRoutes();
   }
 
   private initializeRoutes() {
-    this.router.post(`${this.path}/register`, this.registration);
-    this.router.post(`${this.path}/login`, this.loggingIn);
+    this.router.post(`${this.path}/register`, this.register);
+    this.router.post(`${this.path}/login`, this.login);
   }
 
-  private registration = async (request: Request, response: Response) => {
+  private register = async (request: Request, response: Response) => {
     const result = validate<User>(validationSchema.createUser, request.body);
+    const { value: data, error } = result;
 
-    if (result.error) {
+    if (error) {
       response.status(httpCode.UNPROCESSABLE_ENTITY).json(result);
     }
 
@@ -31,27 +34,29 @@ export default class AuthController implements Controller {
         .status(httpCode.UNPROCESSABLE_ENTITY)
         .json("User with this email already exist");
     } else {
-      const hashedPassword = await bcrypt.hash(result.value.password, 10);
+      const hashedPassword = await bcrypt.hash(data.password, 10);
       const user = await this.user.create({
-        ...result.value,
+        ...data,
         password: hashedPassword,
       });
       response.send({ name: user.name, email: user.email });
     }
   };
 
-  private loggingIn = async (request: Request, response: Response) => {
+  private login = async (request: Request, response: Response) => {
     const result = validate<User>(validationSchema.createUser, request.body);
+    const { value: data } = result;
 
-    const user = await this.user.findOne({ email: result.value.email });
+    const user = await this.user.findOne({ email: data.email });
 
     if (user) {
       const isPasswordMatching = await bcrypt.compare(
-        result.value.password,
+        data.password,
         user.password
       );
       if (isPasswordMatching) {
-        response.send({ name: user.name, email: user.email });
+        const token = this.token.create(user._id);
+        response.send({ token });
       } else {
         response.json("Wrong password");
       }

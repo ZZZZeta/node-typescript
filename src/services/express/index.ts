@@ -18,7 +18,7 @@ export default class ExpressApp {
   }
 
   private initializeMiddlewares() {
-    isDevelop && this.app.use(morgan("dev"));
+    isDevelop && this.app.use(morgan("combined"));
     this.app.use(bodyParser.json());
   }
 

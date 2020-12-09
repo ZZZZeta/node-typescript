@@ -1,6 +1,6 @@
 import ExpressApp from "./services/express";
 import PostsController from "./modules/posts/controllers/posts";
-import AuthController from "./modules/users/controllers/auth";
+import AuthController from "./modules/auth/controllers/auth";
 
 const app = new ExpressApp([new PostsController(), new AuthController()], 5000);
 

@@ -1,7 +1,7 @@
 import * as mongoose from "mongoose";
 import { Document } from "mongoose";
 
-export interface Post {
+export interface Post extends Document {
   author: string;
   content: string;
   title: string;
@@ -13,4 +13,4 @@ const postSchema = new mongoose.Schema({
   title: String,
 });
 
-export const postModel = mongoose.model<Post & Document>("Post", postSchema);
+export const postModel = mongoose.model<Post>("Post", postSchema);
