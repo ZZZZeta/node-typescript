@@ -3,11 +3,13 @@ import { Post, postModel } from "../models/post";
 import { Controller } from "../../../interfaces/controller";
 import { validate, validationSchema } from "../../../utils/validate";
 import httpCode from "http-status";
+import PostsLogic from "../logic/posts";
 
 export default class PostsController implements Controller {
   path = "/posts";
   router = Router();
   private post = postModel;
+  private postsLogic = new PostsLogic();
 
   constructor() {
     this.initializeRoutes();
@@ -21,10 +23,9 @@ export default class PostsController implements Controller {
     this.router.post(this.path, this.createPost);
   }
 
-  private getAllPosts = (request: Request, response: Response) => {
-    this.post.find().then((posts) => {
-      response.send(posts);
-    });
+  private getAllPosts = async (request: Request, response: Response) => {
+    const posts = await this.postsLogic.fetchPosts();
+    response.send( posts.data);
   };
 
   private getPostById = (request: Request, response: Response) => {
