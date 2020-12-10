@@ -21,6 +21,6 @@ export const checkAuth = (
     req.user = <User>jwt.verify(<string>token, config.SESSION_SECRET);
     next();
   } catch {
-    res.status(httpCode.BAD_REQUEST).send("Invalid token.");
+    res.status(httpCode.UNAUTHORIZED).send("Invalid token.");
   }
 };

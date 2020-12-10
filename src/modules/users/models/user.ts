@@ -1,14 +1,20 @@
 import mongoose, { Document } from "mongoose";
+import { v4 } from "uuid";
 
 export interface User extends Document {
-  _id: string;
-  name: string;
+  id: string;
+  firstName: string;
+  lastName: string;
+  secondName: string;
   email: string;
   password: string;
 }
 
 const userSchema = new mongoose.Schema({
-  name: String,
+  id: { type: String, default: v4() },
+  firstName: String,
+  lastName: String,
+  secondName: String,
   email: String,
   password: String,
 });

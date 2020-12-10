@@ -21,47 +21,52 @@ export default class AuthController implements Controller {
     this.router.post(`${this.path}/login`, this.login);
   }
 
-  private register = async (request: Request, response: Response) => {
-    const result = validate<User>(validationSchema.createUser, request.body);
-    const { value: data, error } = result;
+  private register = async (req: Request, res: Response) => {
+    const result = validate<User>(validationSchema.createUser, req.body);
+    const { value: userData, error } = result;
 
-    if (error) {
-      response.status(httpCode.UNPROCESSABLE_ENTITY).json(result);
-    }
+    if (error) res.status(httpCode.UNPROCESSABLE_ENTITY).send(error);
 
-    if (await this.user.findOne({ email: request.body.email })) {
-      response
+    if (await this.user.findOne({ email: req.body.email })) {
+      res
         .status(httpCode.UNPROCESSABLE_ENTITY)
-        .json("User with this email already exist");
+        .send("User with this email already exist");
     } else {
-      const hashedPassword = await bcrypt.hash(data.password, 10);
-      const user = await this.user.create({
-        ...data,
+      const hashedPassword = await bcrypt.hash(userData.password, 10);
+      const newUser = await this.user.create({
+        ...userData,
         password: hashedPassword,
       });
-      response.send({ name: user.name, email: user.email });
+
+      const userWithoutPassword = await this.user
+        .findOne({ email: newUser.email })
+        .select("-password");
+
+      res.send(userWithoutPassword);
     }
   };
 
-  private login = async (request: Request, response: Response) => {
-    const result = validate<User>(validationSchema.createUser, request.body);
-    const { value: data } = result;
+  private login = async (req: Request, res: Response) => {
+    const result = validate<User>(validationSchema.loginUser, req.body);
+    const { value: loginData, error } = result;
 
-    const user = await this.user.findOne({ email: data.email });
+    if (error) res.status(httpCode.UNPROCESSABLE_ENTITY).send(error);
+
+    const user = await this.user.findOne({ email: loginData.email });
 
     if (user) {
       const isPasswordMatching = await bcrypt.compare(
-        data.password,
+        loginData.password,
         user.password
       );
       if (isPasswordMatching) {
-        const token = this.token.create(user._id);
-        response.send({ token });
+        const token = this.token.create(user.id);
+        res.send({ token });
       } else {
-        response.json("Wrong password");
+        res.status(httpCode.UNPROCESSABLE_ENTITY).json("Wrong password");
       }
     } else {
-      response.json("No such user");
+      res.status(httpCode.UNPROCESSABLE_ENTITY).json("No such user");
     }
   };
 }

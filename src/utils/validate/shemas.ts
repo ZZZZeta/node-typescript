@@ -4,7 +4,14 @@ const email = Joi.string().max(256).email().required();
 const password = Joi.string().max(36).min(8).required();
 
 const createUser = {
-  name: Joi.string().min(2).required(),
+  firstName: Joi.string().min(2).required(),
+  lastName: Joi.string().min(2).required(),
+  secondName: Joi.string().min(2).required(),
+  email,
+  password,
+};
+
+const loginUser = {
   email,
   password,
 };
@@ -18,9 +25,10 @@ const post = {
 const validationSchema = {
   post,
   createUser,
+  loginUser
 };
 
 // use | operator: ValidationSchema = type1 | type2 | ...
-type ValidationSchema = typeof post | typeof createUser;
+type ValidationSchema = typeof post | typeof createUser | typeof loginUser;
 
 export { validationSchema, ValidationSchema };

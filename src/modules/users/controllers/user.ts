@@ -18,7 +18,10 @@ export default class UserController implements Controller {
   }
 
   private getMe = async (req: RequestWithUser, res: Response) => {
-    const user = await userModel.findById(req.user?._id).select("-password");
+    const user = await userModel
+      .findOne({ id: req.user?.id })
+      .select("-password");
+
     res.status(httpCode.OK).send(user);
   };
 }
