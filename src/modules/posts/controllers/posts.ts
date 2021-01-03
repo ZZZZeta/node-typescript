@@ -25,7 +25,7 @@ export default class PostsController implements Controller {
 
   private getAllPosts = async (request: Request, response: Response) => {
     const posts = await this.postsLogic.fetchPosts();
-    response.send( posts.data);
+    response.status(httpCode.OK).send(posts.data);
   };
 
   private getPostById = (request: Request, response: Response) => {

@@ -1,7 +1,7 @@
 import { Router, Response, Request } from "express";
-import { User, userModel } from "../../users/models/user";
 import bcrypt from "bcrypt";
 import httpCode from "http-status";
+import { User, userModel } from "../../users/models/user";
 import { Controller } from "../../../interfaces/controller";
 import { validate, validationSchema } from "../../../utils/validate";
 import Token from "../logic/token";
@@ -47,10 +47,7 @@ export default class AuthController implements Controller {
   };
 
   private login = async (req: Request, res: Response) => {
-    const result = validate<User>(validationSchema.loginUser, req.body);
-    const { value: loginData, error } = result;
-
-    if (error) res.status(httpCode.UNPROCESSABLE_ENTITY).send(error);
+    const loginData = req.body;
 
     const user = await this.user.findOne({ email: loginData.email });
 
